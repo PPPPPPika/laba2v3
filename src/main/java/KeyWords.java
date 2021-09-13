@@ -52,6 +52,12 @@ public enum KeyWords {
     },
     KEY_WORD12{
         String getValue(){ return "сложный процент это"; }
+    },
+    KEY_WORD13{
+        String getValue(){ return "центральный банк"; }
+    },
+    KEY_WORD14{
+        String getValue(){ return "налоги это"; }
     };
     abstract String getValue();
 }

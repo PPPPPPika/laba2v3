@@ -53,6 +53,10 @@ public class TestMain {
 
         //System.out.println(transitionMap);
 
+        CollectorInformation collectorInformation = new CollectorInformation();
+
+
+
 
     }
 }

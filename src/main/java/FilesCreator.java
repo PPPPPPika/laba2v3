@@ -13,8 +13,8 @@ import java.util.Map;
 public class FilesCreator {
     private final String pathDirectory = "E:\\fileStorage\\";
     private static Map<LengthInformation, Integer> mapCounters = new HashMap<>(Map.of(LengthInformation.SHORT, 0,
-                                                                                     LengthInformation.MIDDLE, 0,
-                                                                                     LengthInformation.LONG, 0));
+                                                                                      LengthInformation.MIDDLE, 0,
+                                                                                      LengthInformation.LONG, 0));
 
     public FilesCreator(){}
 

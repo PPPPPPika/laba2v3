@@ -8,8 +8,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CollectorInformation {
-    public static Map<LengthInformation, String> mapProcessedTexts = new HashMap<>();
-
+    private static Map<LengthInformation, String> mapProcessedTexts = new HashMap<>();
     private static Map<LengthInformation, StringBuilder> mapInformation = new HashMap<>(Map.of(LengthInformation.SHORT, new StringBuilder(),
                                                                                                LengthInformation.MIDDLE, new StringBuilder(),
                                                                                                LengthInformation.LONG, new StringBuilder()));
@@ -27,68 +26,89 @@ public class CollectorInformation {
                 counterWords += element.text().split(" ").length;
                 information.append(element.text() + " ");
             }
-
-            if (counterWords < 200)
-                mapInformation.replace(LengthInformation.SHORT, mapInformation.get(LengthInformation.SHORT), information);
-            if (counterWords > 200 && counterWords < 500){
-                StringBuilder stringBuilder = transformationInformation(information, LengthInformation.SHORT);
-                if (stringBuilder != null)
-                    mapInformation.replace(LengthInformation.SHORT, mapInformation.get(LengthInformation.SHORT), stringBuilder);
-            }
-            if (counterWords > 500 && counterWords < 800)
-                mapInformation.replace(LengthInformation.MIDDLE, mapInformation.get(LengthInformation.MIDDLE), information);
-            if (counterWords > 800 && counterWords < 1000){
-                StringBuilder stringBuilder1 = transformationInformation(information, LengthInformation.MIDDLE);
-                if (stringBuilder1 != null){
-                    mapInformation.replace(LengthInformation.MIDDLE, mapInformation.get(LengthInformation.MIDDLE), stringBuilder1);
-                }
-            }
-            if (counterWords > 1000 && counterWords < 1500){
-                mapInformation.replace(LengthInformation.LONG, mapInformation.get(LengthInformation.LONG), information);
-            }
-            if (counterWords > 1500){
-                StringBuilder stringBuilder2 = transformationInformation(information, LengthInformation.LONG);
-                if (stringBuilder2 != null){
-                    mapInformation.replace(LengthInformation.LONG, mapInformation.get(LengthInformation.LONG), stringBuilder2);
-                }
-            }
+            classifierInformation(counterWords, information);
+            processingInformation();
+            cleanInformation();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public Map<LengthInformation, String> getInformation() {
-        Map<LengthInformation, String> map = new HashMap<>();
-        for (Map.Entry<LengthInformation, StringBuilder> entry : mapInformation.entrySet()){
-            if (!entry.getValue().toString().equals("") && !entry.getValue().toString().equals(" ") && entry.getValue().toString() != null)
-                map.put(entry.getKey(), entry.getValue().toString());
+    public void classifierInformation(int counterWords, StringBuilder information){
+        if (counterWords <= 200){
+            mapInformation.replace(LengthInformation.SHORT, mapInformation.get(LengthInformation.SHORT), information);
+            //System.out.println("x>200" + mapInformation);
         }
-        //cleanInformation();
-        return map;
+        if (counterWords > 200 && counterWords < 500){
+            StringBuilder stringBuilder = transformationInformation(information, LengthInformation.SHORT);
+            if (stringBuilder != null){
+                mapInformation.replace(LengthInformation.SHORT, mapInformation.get(LengthInformation.SHORT), stringBuilder);
+                //System.out.println("200-500" + mapInformation);
+            }
+        }
+
+        if (counterWords >= 500 && counterWords <= 800){
+            mapInformation.replace(LengthInformation.MIDDLE, mapInformation.get(LengthInformation.MIDDLE), information);
+            //System.out.println("500-800" + mapInformation);
+        }
+        if (counterWords > 800 && counterWords < 1000){
+            StringBuilder stringBuilder1 = transformationInformation(information, LengthInformation.MIDDLE);
+            if (stringBuilder1 != null){
+                mapInformation.replace(LengthInformation.MIDDLE, mapInformation.get(LengthInformation.MIDDLE), stringBuilder1);
+                //System.out.println("800-1000" + mapInformation);
+            }
+        }
+
+        if (counterWords >= 1000 && counterWords <= 1500){
+            mapInformation.replace(LengthInformation.LONG, mapInformation.get(LengthInformation.LONG), information);
+            //System.out.println("1000-1500" + mapInformation);
+        }
+        if (counterWords > 1500){
+            StringBuilder stringBuilder2 = transformationInformation(information, LengthInformation.LONG);
+            if (stringBuilder2 != null){
+                mapInformation.replace(LengthInformation.LONG, mapInformation.get(LengthInformation.LONG), stringBuilder2);
+                //System.out.println("1500-++" + mapInformation);
+            }
+        }
+    }
+
+    private void processingInformation() {
+        for (Map.Entry<LengthInformation, StringBuilder> entry : mapInformation.entrySet()){
+            if (!entry.getValue().toString().equals(" ") && !entry.getValue().isEmpty() && entry.getValue() != null){
+                mapProcessedTexts.put(entry.getKey(), new String(entry.getValue()));
+            }
+        }
     }
 
     private StringBuilder transformationInformation(StringBuilder stringBuilder, LengthInformation lengthInformation){
-        char[] array = stringBuilder.toString().toCharArray();
-        int arraySize = 0;
-        int counter = 0;
+        char[] oldInformation = stringBuilder.toString().toCharArray();
+        int border = 0;
 
         switch (lengthInformation){
-            case SHORT  -> arraySize = 200;
-            case MIDDLE -> arraySize = 800;
-            case LONG   -> arraySize = 1000;
+            case SHORT  -> border = 200;
+            case MIDDLE -> border = 800;
+            case LONG   -> border = 1000;
         }
 
-        char[] newArray = new char[stringBuilder.toString().toCharArray().length];
-        //char[] newArr = new char[];
-        for (int i = 0; i < array.length; i++){
-            newArray[i] = array[i];
-            if (array[i] == ' '){
-                counter++;
-                if (counter == arraySize)
-                    return new StringBuilder(String.valueOf(newArray));
+        int counterSpace = 0;
+        char[] newInformation = new char[stringBuilder.toString().toCharArray().length];
+        for (int i = 0; i < oldInformation.length; i++){
+            newInformation[i] = oldInformation[i];
+            if (oldInformation[i] == ' '){
+                counterSpace++;
+                if (counterSpace == border)
+                    return new StringBuilder(String.valueOf(newInformation));
             }
         }
         return null;
+    }
+
+    public Map<LengthInformation, StringBuilder> getInformation() {
+        return mapInformation;
+    }
+
+    public Map<LengthInformation, String> getProcessedTexts() {
+        return mapProcessedTexts;
     }
 
     public void cleanInformation(){
