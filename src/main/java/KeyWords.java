@@ -1,48 +1,57 @@
 public enum KeyWords {
     KEY_WORD1{
         String getValue(){
-            return "экономика";
+            return "экономика это";
         }
     },
     KEY_WORD2{
         String getValue(){
-            return "финансы";
+            return "финансы это";
         }
     },
     KEY_WORD3{
         String getValue(){
-            return "акции";
+            return "акции это";
         }
     },
     KEY_WORD4{
         String getValue(){
-            return "облигации";
+            return "облигации это";
         }
     },
     KEY_WORD5{
         String getValue(){
-            return "фьючерсы";
+            return "фьючерсы это";
         }
     },
     KEY_WORD6{
         String getValue(){
-            return "инвестирование";
+            return "инвестирование это";
         }
     },
     KEY_WORD7{
         String getValue(){
-            return "биржа";
+            return "биржа это";
         }
     },
     KEY_WORD8{
         String getValue(){
-            return "капитал";
+            return "капитал это";
         }
     },
     KEY_WORD9{
         String getValue(){
-            return "бизнес";
+            return "бизнес это";
         }
+    },
+    KEY_WORD10{
+        String getValue() { return "финансовый рынок это"; }
+    },
+    KEY_WORD11{
+        String getValue() { return "банковские вклады это"; }
+    },
+    KEY_WORD12{
+        String getValue(){ return "сложный процент это"; }
     };
     abstract String getValue();
 }

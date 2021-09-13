@@ -7,9 +7,14 @@ import java.io.IOException;
 import java.util.*;
 
 public class SearchEngine implements Runnable {
-    private static final String SEARCH_TEMPLATE = "https://www.google.ru/search?q=";
-    public static volatile List<String> links = Collections.synchronizedList(new ArrayList<>());
     private String searchWord = "";
+    private static final String SEARCH_TEMPLATE = "https://www.google.ru/search?q=";
+    private static volatile List<String> links = Collections.synchronizedList(new ArrayList<>());
+    private final Set<char[]> notValidLinks = new HashSet<>(Arrays.asList("https://www.google".toCharArray(),
+                                                                          "https://policies.google".toCharArray(),
+                                                                          "https://support.google".toCharArray(),
+                                                                          "https://www.youtube".toCharArray(),
+                                                                          "https://maps.google".toCharArray()));
 
     public SearchEngine(String searchWord) {
         this.searchWord = searchWord;
@@ -23,11 +28,10 @@ public class SearchEngine implements Runnable {
     public void searchLinks(){
         try {
             Document document = Jsoup.connect(SEARCH_TEMPLATE + searchWord).get();
-            //Elements elements = document.getElementsByTag("cite");
             Elements elements = document.select("a");
 
             for (Element element : elements){
-                if (checkURL(element.absUrl("href").toCharArray())){
+                if (checkURL(element.absUrl("href").toCharArray()) && !element.absUrl("href").equals("")){
                     String link = element.absUrl("href");
                     synchronized (this){
                         boolean isExist = false;
@@ -48,47 +52,63 @@ public class SearchEngine implements Runnable {
         }
     }
 
-    private synchronized boolean checkURL(char[] url){
-        int counter1 = 0;
-        int counter2 = 0;
-        int counter3 = 0;
-        int counter4 = 0;
-        int counter5 = 0;
-        char[] chGoogle1 = "https://www.google".toCharArray();
-        char[] chGoogle2 = "https://policies.google".toCharArray();
-        char[] chGoogle3 = "https://support.google".toCharArray();
-        char[] chGoogle4 = "https://www.youtube".toCharArray();
-        char[] chGoogle5 = "https://maps.google".toCharArray();
+    public static List<String> getLinks() {
+        return links;
+    }
 
-        int currentSize = url.length > chGoogle1.length ? chGoogle1.length : url.length;
+    private boolean checkURL(char[] url){ //сомнительная необходимость в синхронизации
+        int[] arrayCounters = {0, 0, 0, 0, 0};
+        int indexNotValidLink = 0;
+
+        for (char[] notValidLink : notValidLinks){
+            char[] subCurrentURL = new char[notValidLink.length];
+            if (url.length > notValidLink.length){
+                System.arraycopy(url, 0, subCurrentURL, 0, notValidLink.length);
+            }
+            for (int i = 0; i < notValidLink.length; i++){
+                if (subCurrentURL[i] == notValidLink[i]){
+                    arrayCounters[indexNotValidLink]++;
+                    if (arrayCounters[indexNotValidLink] == notValidLink.length)
+                        return false;
+                }
+            }
+            indexNotValidLink++;
+        }
+        return true;
+
+        /*int currentSize = url.length > chGoogle1.length ? chGoogle1.length : url.length;
 
         for (int i = 0; i < currentSize; i++){
             if (url[i] == chGoogle1[i]){
-                counter1++;
-                if (counter1 == currentSize)
+                arrayCounters[0]++;
+                if (arrayCounters[0] == currentSize)
                     return false;
             }
             if (url[i] == chGoogle2[i]){
-                counter2++;
-                if (counter2 == currentSize)
+                arrayCounters[1]++;
+                if (arrayCounters[1] == currentSize)
                     return false;
             }
             if (url[i] == chGoogle3[i]){
-                counter3++;
-                if (counter3 == currentSize)
+                arrayCounters[2]++;
+                if (arrayCounters[2] == currentSize)
                     return false;
             }
             if (url[i] == chGoogle4[i]){
-                counter4++;
-                if (counter4 == currentSize)
+                arrayCounters[3]++;
+                if (arrayCounters[3] == currentSize)
                     return false;
             }
             if (url[i] == chGoogle5[i]){
-                counter5++;
-                if (counter5 == currentSize)
+                arrayCounters[4]++;
+                if (arrayCounters[4] == currentSize)
                     return false;
             }
         }
-        return true;
+        return true;*/
+
+
+
+
     }
 }
