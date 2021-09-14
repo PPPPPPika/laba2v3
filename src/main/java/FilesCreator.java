@@ -44,17 +44,17 @@ public class FilesCreator {
 
     public void createFile(String information, String url, LengthInformation lengthInformation){
         String pathFile = createPath(lengthInformation);
-
         if (pathFile != null){
             if (!information.equals("") && !information.equals(" ") && information != null){
                 try (XWPFDocument document = new XWPFDocument();
                      FileOutputStream fileOutputStream = new FileOutputStream(pathFile)){
                     XWPFParagraph paragraph = document.createParagraph();
                     XWPFRun run = paragraph.createRun();
-                    run.setText(information + "\n" + "\n" +
-                            "Количество слов: " + information.split(" ").length + "\n" +
-                            "Основная тематика: Экономика и финансы" +
-                            "Источник: " + url);
+                    String fullInformation = information + "\n" + "\n" +
+                                             "Количество слов: " + information.split(" ").length + "\n" +
+                                             "Основная тематика: Экономика и финансы" +
+                                             "Источник: " + url + "\n";
+                    run.setText(fullInformation);
                     document.write(fileOutputStream);
                     mapCounters.replace(lengthInformation, mapCounters.get(lengthInformation), mapCounters.get(lengthInformation) + 1);
                 } catch (IOException e) {
@@ -62,11 +62,27 @@ public class FilesCreator {
                 }
             }
         }
-        else
-            System.out.println("null in create file");
     }
 
     public static int getCounterFiles(LengthInformation lengthInformation) {
         return mapCounters.get(lengthInformation);
     }
+
+    public boolean checkNumbersFiles(LengthInformation lengthInformation){
+        boolean isBorder = false;
+        if (mapCounters.get(lengthInformation) == 101)
+            isBorder = true;
+        return isBorder;
+    }
+
+    public boolean checkNumbersAllFiles(){
+        boolean finish = false;
+        if (mapCounters.get(LengthInformation.SHORT) == 101
+                && mapCounters.get(LengthInformation.MIDDLE) == 101
+                && mapCounters.get(LengthInformation.LONG) == 101){
+            finish = true;
+        }
+        return finish;
+    }
+
 }

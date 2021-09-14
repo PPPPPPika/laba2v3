@@ -35,40 +35,28 @@ public class CollectorInformation {
     }
 
     public void classifierInformation(int counterWords, StringBuilder information){
-        if (counterWords <= 200){
+        if (counterWords <= 200)
             mapInformation.replace(LengthInformation.SHORT, mapInformation.get(LengthInformation.SHORT), information);
-            //System.out.println("x>200" + mapInformation);
-        }
         if (counterWords > 200 && counterWords < 500){
             StringBuilder stringBuilder = transformationInformation(information, LengthInformation.SHORT);
-            if (stringBuilder != null){
+            if (stringBuilder != null)
                 mapInformation.replace(LengthInformation.SHORT, mapInformation.get(LengthInformation.SHORT), stringBuilder);
-                //System.out.println("200-500" + mapInformation);
-            }
         }
 
-        if (counterWords >= 500 && counterWords <= 800){
+        if (counterWords >= 500 && counterWords <= 800)
             mapInformation.replace(LengthInformation.MIDDLE, mapInformation.get(LengthInformation.MIDDLE), information);
-            //System.out.println("500-800" + mapInformation);
-        }
         if (counterWords > 800 && counterWords < 1000){
             StringBuilder stringBuilder1 = transformationInformation(information, LengthInformation.MIDDLE);
-            if (stringBuilder1 != null){
+            if (stringBuilder1 != null)
                 mapInformation.replace(LengthInformation.MIDDLE, mapInformation.get(LengthInformation.MIDDLE), stringBuilder1);
-                //System.out.println("800-1000" + mapInformation);
-            }
         }
 
-        if (counterWords >= 1000 && counterWords <= 1500){
+        if (counterWords >= 1000 && counterWords <= 1500)
             mapInformation.replace(LengthInformation.LONG, mapInformation.get(LengthInformation.LONG), information);
-            //System.out.println("1000-1500" + mapInformation);
-        }
         if (counterWords > 1500){
             StringBuilder stringBuilder2 = transformationInformation(information, LengthInformation.LONG);
-            if (stringBuilder2 != null){
+            if (stringBuilder2 != null)
                 mapInformation.replace(LengthInformation.LONG, mapInformation.get(LengthInformation.LONG), stringBuilder2);
-                //System.out.println("1500-++" + mapInformation);
-            }
         }
     }
 

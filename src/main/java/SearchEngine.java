@@ -25,7 +25,7 @@ public class SearchEngine implements Runnable {
         searchLinks();
     }
 
-    public void searchLinks(){
+    public synchronized void searchLinks(){
         try {
             Document document = Jsoup.connect(SEARCH_TEMPLATE + searchWord).get();
             Elements elements = document.select("a");
@@ -33,7 +33,7 @@ public class SearchEngine implements Runnable {
             for (Element element : elements){
                 if (checkURL(element.absUrl("href").toCharArray()) && !element.absUrl("href").equals("")){
                     String link = element.absUrl("href");
-                    synchronized (this){
+                    //synchronized (this){
                         boolean isExist = false;
                         for (String existingLink : links){
                             if (link.equals(existingLink) || link.equals("YouTube")) {
@@ -44,7 +44,7 @@ public class SearchEngine implements Runnable {
                         if (!isExist) {
                             links.add(link);
                         }
-                    }
+                    //}
                 }
             }
         } catch (IOException e) {
@@ -75,40 +75,5 @@ public class SearchEngine implements Runnable {
             indexNotValidLink++;
         }
         return true;
-
-        /*int currentSize = url.length > chGoogle1.length ? chGoogle1.length : url.length;
-
-        for (int i = 0; i < currentSize; i++){
-            if (url[i] == chGoogle1[i]){
-                arrayCounters[0]++;
-                if (arrayCounters[0] == currentSize)
-                    return false;
-            }
-            if (url[i] == chGoogle2[i]){
-                arrayCounters[1]++;
-                if (arrayCounters[1] == currentSize)
-                    return false;
-            }
-            if (url[i] == chGoogle3[i]){
-                arrayCounters[2]++;
-                if (arrayCounters[2] == currentSize)
-                    return false;
-            }
-            if (url[i] == chGoogle4[i]){
-                arrayCounters[3]++;
-                if (arrayCounters[3] == currentSize)
-                    return false;
-            }
-            if (url[i] == chGoogle5[i]){
-                arrayCounters[4]++;
-                if (arrayCounters[4] == currentSize)
-                    return false;
-            }
-        }
-        return true;*/
-
-
-
-
     }
 }
