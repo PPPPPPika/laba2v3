@@ -9,6 +9,7 @@ public class Main {
         for (KeyWords keyWord : KeyWords.values())
             executorService.execute(new SearchEngine(keyWord.getValue()));
         executorService.shutdown();
+
         //test
         try {
             Thread.sleep(5000);
@@ -21,7 +22,7 @@ public class Main {
             e.printStackTrace();
         }
 
-        //write files
+        //extract information and write files
         CollectorInformation collectorInformation = new CollectorInformation();
         FilesCreator filesCreator = new FilesCreator();
 
@@ -33,7 +34,9 @@ public class Main {
                             && !collectorInformation.getProcessedTexts().get(lengthInformation).equals(" ")
                             && collectorInformation.getProcessedTexts().get(lengthInformation) != null){
                         if (!filesCreator.checkNumbersFiles(lengthInformation)){
-                            filesCreator.createFile(url, collectorInformation.getProcessedTexts().get(lengthInformation), lengthInformation);
+                            System.out.println("length from main : " + collectorInformation.getProcessedTexts().get(lengthInformation).split(" ").length);
+                            filesCreator.createFile(url, collectorInformation.getProcessedTexts().get(lengthInformation), lengthInformation,
+                                    collectorInformation.getProcessedTexts().get(lengthInformation).split(" ").length);
                         }
                     }
                 }
@@ -42,5 +45,3 @@ public class Main {
         }
     }
 }
-
-//исправить количество слов в файле

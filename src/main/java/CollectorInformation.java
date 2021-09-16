@@ -91,10 +91,6 @@ public class CollectorInformation {
         return null;
     }
 
-    public Map<LengthInformation, StringBuilder> getInformation() {
-        return mapInformation;
-    }
-
     public Map<LengthInformation, String> getProcessedTexts() {
         return mapProcessedTexts;
     }

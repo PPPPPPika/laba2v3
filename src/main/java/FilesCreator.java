@@ -1,4 +1,6 @@
+import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
@@ -15,7 +17,6 @@ public class FilesCreator {
     private static Map<LengthInformation, Integer> mapCounters = new HashMap<>(Map.of(LengthInformation.SHORT, 0,
                                                                                       LengthInformation.MIDDLE, 0,
                                                                                       LengthInformation.LONG, 0));
-
     public FilesCreator(){}
 
     private void createDirectory(String pathDirectory){
@@ -42,20 +43,31 @@ public class FilesCreator {
         return null;
     }
 
-    public void createFile(String information, String url, LengthInformation lengthInformation){
+    public void createFile(String information, String url, LengthInformation lengthInformation, int numberWords){
         String pathFile = createPath(lengthInformation);
         if (pathFile != null){
             if (!information.equals("") && !information.equals(" ") && information != null){
-                try (XWPFDocument document = new XWPFDocument();
-                     FileOutputStream fileOutputStream = new FileOutputStream(pathFile)){
+                try (XWPFDocument document = new XWPFDocument()){
+                    String additionInformation = "Количество слов: " + numberWords + " | " +
+                            "Основная тематика: Экономика и финансы" + " | " +
+                            "Источник: ";
                     XWPFParagraph paragraph = document.createParagraph();
                     XWPFRun run = paragraph.createRun();
-                    String fullInformation = information + "\n" + "\n" +
-                                             "Количество слов: " + information.split(" ").length + "\n" +
-                                             "Основная тематика: Экономика и финансы" +
-                                             "Источник: " + url + "\n";
-                    run.setText(fullInformation);
-                    document.write(fileOutputStream);
+                    run.setText(url);
+                    run.addBreak();
+
+                    XWPFParagraph additionParagraph = document.createParagraph();
+                    XWPFRun additionRun = additionParagraph.createRun();
+                    additionRun.setText(information);
+                    additionRun.addBreak();
+
+
+                    run.setText(additionInformation);
+
+
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(pathFile)){
+                        document.write(fileOutputStream);
+                    }
                     mapCounters.replace(lengthInformation, mapCounters.get(lengthInformation), mapCounters.get(lengthInformation) + 1);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -64,25 +76,20 @@ public class FilesCreator {
         }
     }
 
-    public static int getCounterFiles(LengthInformation lengthInformation) {
-        return mapCounters.get(lengthInformation);
-    }
-
     public boolean checkNumbersFiles(LengthInformation lengthInformation){
         boolean isBorder = false;
-        if (mapCounters.get(lengthInformation) == 101)
+        if (mapCounters.get(lengthInformation) == 100)
             isBorder = true;
         return isBorder;
     }
 
     public boolean checkNumbersAllFiles(){
         boolean finish = false;
-        if (mapCounters.get(LengthInformation.SHORT) == 101
-                && mapCounters.get(LengthInformation.MIDDLE) == 101
-                && mapCounters.get(LengthInformation.LONG) == 101){
+        if (mapCounters.get(LengthInformation.SHORT) == 100
+                && mapCounters.get(LengthInformation.MIDDLE) == 100
+                && mapCounters.get(LengthInformation.LONG) == 100){
             finish = true;
         }
         return finish;
     }
-
 }
