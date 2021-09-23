@@ -1,3 +1,4 @@
+import org.apache.poi.hpsf.Section;
 import org.apache.poi.wp.usermodel.HeaderFooterType;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
 import org.apache.poi.xwpf.usermodel.XWPFFooter;
@@ -5,6 +6,7 @@ import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,19 +27,19 @@ public class FilesCreator {
         }
     }
 
-    private String createPath(LengthInformation lengthInformation){
+    public String createPath(LengthInformation lengthInformation){
         switch (lengthInformation) {
             case SHORT -> {
                 createDirectory(pathDirectory + "shortTexts");
-                return pathDirectory + "shortTexts" + "\\" + lengthInformation + "_file" + mapCounters.get(lengthInformation) + ".docx";
+                return pathDirectory + "shortTexts" + "\\" + lengthInformation + "_file" + mapCounters.get(lengthInformation);
             }
             case MIDDLE -> {
                 createDirectory(pathDirectory + "middleTexts");
-                return pathDirectory + "middleTexts" + "\\" + lengthInformation + "_file" + mapCounters.get(lengthInformation) + ".docx";
+                return pathDirectory + "middleTexts" + "\\" + lengthInformation + "_file" + mapCounters.get(lengthInformation);
             }
             case LONG -> {
                 createDirectory(pathDirectory + "longTexts");
-                return pathDirectory + "longTexts" + "\\" + lengthInformation + "_file" + mapCounters.get(lengthInformation) + ".docx";
+                return pathDirectory + "longTexts" + "\\" + lengthInformation + "_file" + mapCounters.get(lengthInformation);
             }
         }
         return null;
@@ -48,31 +50,41 @@ public class FilesCreator {
         if (pathFile != null){
             if (!information.equals("") && !information.equals(" ") && information != null){
                 try (XWPFDocument document = new XWPFDocument()){
-                    String additionInformation = "Количество слов: " + numberWords + " | " +
-                            "Основная тематика: Экономика и финансы" + " | " +
-                            "Источник: ";
-                    XWPFParagraph paragraph = document.createParagraph();
-                    XWPFRun run = paragraph.createRun();
-                    run.setText(url);
-                    run.addBreak();
-
                     XWPFParagraph additionParagraph = document.createParagraph();
                     XWPFRun additionRun = additionParagraph.createRun();
                     additionRun.setText(information);
-                    additionRun.addBreak();
-
-
-                    run.setText(additionInformation);
-
-
-                    try (FileOutputStream fileOutputStream = new FileOutputStream(pathFile)){
+                    try (FileOutputStream fileOutputStream = new FileOutputStream(pathFile  + ".docx")){
                         document.write(fileOutputStream);
                     }
-                    mapCounters.replace(lengthInformation, mapCounters.get(lengthInformation), mapCounters.get(lengthInformation) + 1);
+                    catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                createAdditionFile(numberWords, url, pathFile);
+                mapCounters.replace(lengthInformation, mapCounters.get(lengthInformation), mapCounters.get(lengthInformation) + 1);
             }
+        }
+    }
+
+    public void createAdditionFile(int numberWords, String url, String pathFile){
+        String additionInformation = "Количество слов: " + numberWords + " | " +
+                                     "Основная тематика: Экономика и финансы" + " | " +
+                                     "Источник: ";
+        try (XWPFDocument document = new XWPFDocument()){
+            XWPFParagraph paragraph = document.createParagraph();
+            XWPFRun run = paragraph.createRun();
+            run.setText(additionInformation);
+            run.addBreak();
+            run.setText(url);
+            try (FileOutputStream fileOutputStream = new FileOutputStream(pathFile + "_addition.docx")){
+                document.write(fileOutputStream);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 

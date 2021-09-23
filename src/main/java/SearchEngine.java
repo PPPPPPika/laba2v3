@@ -25,7 +25,7 @@ public class SearchEngine implements Runnable {
         searchLinks();
     }
 
-    public synchronized void searchLinks(){
+    public void searchLinks(){
         try {
             Document document = Jsoup.connect(SEARCH_TEMPLATE + searchWord).get();
             Elements elements = document.select("a");
@@ -33,7 +33,7 @@ public class SearchEngine implements Runnable {
             for (Element element : elements){
                 if (checkURL(element.absUrl("href").toCharArray()) && !element.absUrl("href").equals("")){
                     String link = element.absUrl("href");
-                    //synchronized (this){
+                    synchronized (this){
                         boolean isExist = false;
                         for (String existingLink : links){
                             if (link.equals(existingLink) || link.equals("YouTube")) {
@@ -44,7 +44,7 @@ public class SearchEngine implements Runnable {
                         if (!isExist) {
                             links.add(link);
                         }
-                    //}
+                    }
                 }
             }
         } catch (IOException e) {

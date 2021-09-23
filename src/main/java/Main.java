@@ -34,8 +34,7 @@ public class Main {
                             && !collectorInformation.getProcessedTexts().get(lengthInformation).equals(" ")
                             && collectorInformation.getProcessedTexts().get(lengthInformation) != null){
                         if (!filesCreator.checkNumbersFiles(lengthInformation)){
-                            System.out.println("length from main : " + collectorInformation.getProcessedTexts().get(lengthInformation).split(" ").length);
-                            filesCreator.createFile(url, collectorInformation.getProcessedTexts().get(lengthInformation), lengthInformation,
+                            filesCreator.createFile(collectorInformation.getProcessedTexts().get(lengthInformation), url, lengthInformation,
                                     collectorInformation.getProcessedTexts().get(lengthInformation).split(" ").length);
                         }
                     }
